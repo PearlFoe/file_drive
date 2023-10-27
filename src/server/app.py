@@ -1,12 +1,13 @@
-"""Enty poing of backend of the app."""
+"""Enty poing of the server."""
 from aiohttp import web
 
-_ROUTERS = []
+from . import get_app as root_v1
+
 
 async def get_app() -> web.Application:
     """Create server application."""
     app = web.Application()
 
-    app.add_routes(_ROUTERS)
+    app.add_subapp(prefix="/api/v1/", subapp=root_v1())
 
     return app
