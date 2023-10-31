@@ -20,6 +20,7 @@ def _get_container() -> Container:
     return container
 
 
+
 async def get_app() -> web.Application:
     """Create server application."""
     app = web.Application()

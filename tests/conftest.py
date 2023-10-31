@@ -43,6 +43,7 @@ async def server(aiohttp_server: TestServer) -> web.Server:
     return await aiohttp_server(server_app)
 
 
+
 @pytest_asyncio.fixture(scope="function")
 async def client(aiohttp_client: TestClient) -> ClientSession:
     server_app = await app.get_app()

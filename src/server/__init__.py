@@ -11,4 +11,5 @@ def get_app() -> Application:
     """
     app = Application()
     app.add_subapp(prefix="/storage", subapp=storage.get_app())
+
     return app
