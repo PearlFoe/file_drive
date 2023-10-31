@@ -1,21 +1,26 @@
 """HTTP client."""
+import aiofiles
 import asyncio
 import aiohttp
 
 
 async def main() -> None:
-    """Send simple binary data."""
-    url = "http://0.0.0.0:8080/file/"
-    file_path = "tests/data/Lenna.png"
-    async with aiohttp.ClientSession() as s:
-        data = aiohttp.FormData()
-        with open(file_path, "rb") as f:
-            data.add_field(
-                name="file",
-                value=f
+    """Send request and writes image from response."""
+    url = "http://0.0.0.0:8080/api/v1/storage/download/"
+    data = {
+        "file_name": "Lenna.png"
+    }
+    async with aiohttp.ClientSession() as s, s.post(url, json=data) as r:
+        print(r.headers)
+        print(r.status)
+
+        reader = aiohttp.MultipartReader.from_response(r)
+        sub_reader = await reader.next()
+        print()
+        async with aiofiles.open("storage/1.png", "wb") as f:
+            await f.write(
+                await sub_reader.read() # type: ignore
             )
-            async with s.post(url, data=data) as r:
-                print(r.status)
 
 
 if __name__ == "__main__":
