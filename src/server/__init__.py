@@ -1,10 +1,14 @@
 from aiohttp.web import Application
 
-from .storage import get_app as storage_app
+from . import storage
 
 
 def get_app() -> Application:
-    """Create app funcion."""
+    """
+    Create app funcion.
+
+    :return Application: Main server subapp. Aggregates all the project's subapps.
+    """
     app = Application()
-    app.add_subapp(prefix="/storage", subapp=storage_app())
+    app.add_subapp(prefix="/storage", subapp=storage.get_app())
     return app

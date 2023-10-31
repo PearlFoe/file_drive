@@ -9,7 +9,7 @@ repos:
     pass_filenames: false
   - id: ruff 
     name: Ruff
-    entry: ruff check src/ tests/ --fix
+    entry: ruff check src/ tests/unit/ tests/integration/ --fix
     language: system
     always_run: true
     pass_filenames: false
