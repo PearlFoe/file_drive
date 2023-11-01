@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 
-class DownloadData(BaseModel):
+class DownloadDataRequest(BaseModel):
     """Download file request data model."""
 
     file_name: str
