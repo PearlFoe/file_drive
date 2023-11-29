@@ -29,7 +29,7 @@ class FileHandler:
         """
         Save data form reader into storage.
 
-        :param reader (MultipartReader): Multipart reader from request.
+        :param reader: Multipart reader from request.
         """
         file_name = reader.headers.get("filename", "Lenna.png")
         file_path = os.path.join(self.storage_path, file_name)
@@ -39,8 +39,8 @@ class FileHandler:
         """
         Get file content from storage.
 
-        :param file_name (str): Name of the file in the storage.
-        :return bytes: File content.
+        :param file_name: Name of the file in the storage.
+        :return: File content.
         """
         file_path = os.path.join(self.storage_path, file_name)
         return await self._read(file_path=file_path)

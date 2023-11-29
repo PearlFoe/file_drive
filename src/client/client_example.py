@@ -16,7 +16,7 @@ async def main() -> None:
 
         reader = aiohttp.MultipartReader.from_response(r)
         sub_reader = await reader.next()
-        print()
+
         async with aiofiles.open("storage/1.png", "wb") as f:
             await f.write(
                 await sub_reader.read() # type: ignore

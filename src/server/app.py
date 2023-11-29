@@ -10,7 +10,7 @@ def _get_container() -> Container:
     """
     Create server container for dependency managing.
 
-    :return Container: Declarative container.
+    :return: Declarative container.
     """
     env = Settigns()
 

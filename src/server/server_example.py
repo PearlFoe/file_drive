@@ -6,8 +6,8 @@ async def process_file(request: web.Request) -> web.Response:
     """
     Multipart file request handler.
 
-    :param request (web.Request): aiohttp.web.Request object.
-    :return web.Response: aiohttp.web.Response object.
+    :param request: aiohttp.web.Request object.
+    :return: aiohttp.web.Response object.
     """
     reader = await request.multipart()
     print(reader.headers)

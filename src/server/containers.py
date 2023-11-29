@@ -2,6 +2,7 @@
 from dependency_injector import containers, providers
 
 from src.server.storage.file_handlers import FileHandler
+from src.server.storage.multipart_handlers import MutipartHandler
 
 
 class Container(containers.DeclarativeContainer):
@@ -16,5 +17,9 @@ class Container(containers.DeclarativeContainer):
 
     file_handler = providers.Factory(
         FileHandler,
-        storage_dir=env.storage_dir
+        storage_dir=env.storage_dir,
+    )
+
+    multipart_handler = providers.Factory(
+        MutipartHandler,
     )
