@@ -1,14 +1,19 @@
+import uuid
 import asyncio
 import pytest
 import pytest_asyncio
-from aiohttp.test_utils import TestServer, TestClient
-from aiohttp import web, ClientSession, MultipartWriter
+from aiohttp.test_utils import TestServer, TestClient, make_mocked_request
+from aiohttp.web_request import Request
+from aiohttp import web, ClientSession, MultipartWriter, MultipartReader
 
 from src.server.storage.file_handlers import FileHandler
 from src.server.storage.models import FileMetadata
+from src.server.storage.multipart_handlers import MutipartHandler
 
 from src.server import app, containers
 from src.settings import Settigns
+
+from tests.mocks.streams import Stream
 
 
 @pytest.fixture(scope="session")
@@ -52,17 +57,40 @@ async def client(aiohttp_client: TestClient, application: web.Application) -> Cl
 
 
 @pytest.fixture(scope="class")
-def bytes_data() -> bytes:
+def request_mock() -> Request:
+    return make_mocked_request(
+        method="post",
+        path="api/test_path/",
+    )
+
+
+@pytest.fixture(scope="class")
+def multipart_request_mock(mp_writer_mock: MultipartWriter) -> Request:
+    return make_mocked_request(
+        method="post",
+        path="api/test_path/",
+        writer=mp_writer_mock,
+        headers={"Content-Type": f"multipart/x-mixed; boundary={mp_writer_mock.boundary}"}
+    )
+
+
+@pytest.fixture(scope="class")
+def file_data() -> bytes:
     return b"test byte data"
 
 
 @pytest.fixture(scope="class")
-def file_handler_mock(settings: Settigns, bytes_data: bytes) -> FileHandler:
+def file_metadata() -> FileMetadata:
+    return FileMetadata(file_name="Lenna.png")
+
+
+@pytest.fixture(scope="class")
+def file_handler_mock(settings: Settigns, file_data: bytes) -> FileHandler:
     async def _write(*args, **kwargs) -> None:
         return None
 
     async def _read(*args, **kwargs) -> bytes:
-        return bytes_data
+        return file_data
 
     fh = FileHandler(storage_dir=settings.storage_dir)
 
@@ -78,15 +106,46 @@ def file_handler(settings: Settigns) -> FileHandler:
 
 
 @pytest.fixture(scope="class")
-def file_metadata() -> FileMetadata:
-    return FileMetadata(file_name="Lenna.png")
+def mp_raw_content(file_metadata: FileMetadata, file_data: bytes) -> tuple[str, bytes]:
+    encoding = "utf-8"
+    boundary = uuid.uuid4().hex
+    content =  bytes(
+        f"--{boundary}\r\n" +\
+        "Content-Type: application/json\r\n\r\n" +\
+        file_metadata.model_dump_json() +\
+        f"\r\n--{boundary}\r\n" +\
+        "Content-Type: image/png\r\n\r\n" +\
+        file_data.decode(encoding=encoding) +\
+        f"\r\n--{boundary}--",
+        encoding=encoding
+    )
+
+    return boundary, content
 
 
 @pytest.fixture(scope="class")
-def mp_writer_mock(bytes_data: bytes) -> MultipartWriter:
+def mp_reader_content(mp_raw_content: tuple[str, bytes]) -> tuple[dict, Stream]:
+    boundary, content = mp_raw_content
+    headers = {"Content-Type": f"multipart/x-mixed; boundary={boundary}"}
+    sr = Stream(content=content)
+    return headers, sr
+
+@pytest.fixture(scope="class")
+def mp_writer_mock(file_data: bytes) -> MultipartWriter:
     with MultipartWriter(subtype="image/png") as mp_writer:
         mp_writer.append(
-            bytes_data,
+            file_data,
             {"Content-Type": "image/png"}  # type: ignore
         )
         return mp_writer
+
+
+@pytest_asyncio.fixture(scope="class")
+async def mp_reader_mock(mp_reader_content: tuple[dict, asyncio.StreamReader]) -> MultipartReader:
+    headers, content = mp_reader_content
+    return MultipartReader(headers, content)
+
+
+@pytest.fixture(scope="class")
+def multipart_handler() -> MutipartHandler:
+    return MutipartHandler()

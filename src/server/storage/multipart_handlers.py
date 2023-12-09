@@ -54,9 +54,11 @@ class MutipartHandler:
             - file content
         :return: Parsed request body: metadata and file content.
         """
-        data_reader = await data.next()
-        metadata = await data.next()
+        md_reader = await data.next()
+        md_content = await md_reader.read()
+        metadata = FileMetadata.model_validate_json(md_content.decode())
 
-        metadata = FileMetadata.model_validate(str(metadata))
+        fd_reader = await data.next()
+        fd_content = await fd_reader.read()
 
-        return metadata, data_reader
+        return metadata, fd_content
