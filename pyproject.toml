@@ -15,7 +15,7 @@ line-length = 88
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["E402", "D104"]
-"**/{tests,docs,tools}/*" = ["E402", "D"]
+"**/{tests,docs,tools}/*" = ["E402", "D", "ANN"]
 
 [tool.ruff.flake8-quotes]
 docstring-quotes = "double"
