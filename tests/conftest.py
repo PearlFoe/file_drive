@@ -135,7 +135,7 @@ def mp_writer_mock(file_data: bytes) -> MultipartWriter:
     with MultipartWriter(subtype="image/png") as mp_writer:
         mp_writer.append(
             file_data,
-            {"Content-Type": "image/png"}  # type: ignore
+            {"Content-Type": "image/png"}
         )
         return mp_writer
 

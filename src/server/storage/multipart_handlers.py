@@ -33,11 +33,11 @@ class MutipartHandler:
 
             file_writer.append(
                 metadata.model_dump_json(),
-                {"Content-Type": "application/json"}  # type: ignore
+                {"Content-Type": "application/json"}
             )
             file_writer.append(
                 file,
-                {"Content-Type": "image/png"}  # type: ignore
+                {"Content-Type": "image/png"}
             )
 
             await file_writer.write(response)
