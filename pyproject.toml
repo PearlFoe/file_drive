@@ -1,10 +1,3 @@
-[tool.pyright]
-typeCheckingMode = "strict"
-reportMissingTypeArgument = true
-reportMissingParameterType = true
-reportInvalidTypeVarUse = true
-reportUnknownMemberType = false
-
 [tool.ruff]
 select = ["E", "F", "B", "E", "W", "Q", "N", "D", "ANN", "C4", "SIM", "ARG"]
 ignore = ["E501", "D212", "D107", "D203", "ANN101"]
