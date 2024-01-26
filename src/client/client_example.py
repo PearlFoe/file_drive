@@ -1,11 +1,25 @@
 """HTTP client."""
-import aiofiles
+import argparse
 import asyncio
+
+import aiofiles
 import aiohttp
 
 
-async def main() -> None:
-    """Send request and writes image from response."""
+
+async def _write_img(reader: aiohttp.MultipartReader) -> None:
+    async with aiofiles.open("storage/Lenna.png", "wb") as f:
+        await f.write(
+            await reader.read()
+        )
+
+
+async def _read_img() -> bytes:
+    async with aiofiles.open("storage/Lenna.png", "rb") as f:
+        return await f.read()
+
+
+async def _download_img() -> None:
     url = "http://0.0.0.0:8080/api/v1/storage/download/"
     data = {
         "file_name": "Lenna.png"
@@ -16,12 +30,34 @@ async def main() -> None:
 
         reader = aiohttp.MultipartReader.from_response(r)
         sub_reader = await reader.next()
+        await _write_img(sub_reader)
 
-        async with aiofiles.open("storage/1.png", "wb") as f:
-            await f.write(
-                await sub_reader.read() # type: ignore
-            )
+
+async def _upload_img() -> None:
+    url = "http://0.0.0.0:8080/api/v1/storage/upload/"
+
+    with aiohttp.MultipartWriter(subtype="image/png") as file_writer:
+        headers = {
+            "Content-Type": f"multipart/x-mixed; boundary={file_writer.boundary}"
+        }
+        file_writer.append(await _read_img())
+
+        async with aiohttp.ClientSession() as s, s.post(url, data=file_writer, headers=headers) as r:
+            print(r.status)
+
+
+async def main(command: str) -> None:
+    """Send request and writes image from response."""
+    match command:
+        case "u":
+            await _upload_img()
+        case "d":
+            await _download_img()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c")
+    args = parser.parse_args()
+
+    asyncio.run(main(args.c))

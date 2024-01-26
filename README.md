@@ -15,5 +15,5 @@ pip3 install -r requirements.txt
 ### Server
 To run server use
 ```shell
-docker compose run --build
+docker compose up --build
 ```

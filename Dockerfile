@@ -24,6 +24,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 USER ${USER}
 
-EXPOSE 8000
+EXPOSE 8080
 
 CMD ["gunicorn", "app:get_app", "--chdir", "/app/src/server/", "--bind", "localhost:8080", "--worker-class", "aiohttp.GunicornWebWorker"]
