@@ -15,5 +15,5 @@ pip3 install -r requirements.txt
 ### Server
 To run server use
 ```shell
-gunicorn app:get_app --chdir src/server/ --bind localhost:8080 --worker-class aiohttp.GunicornWebWorker
+docker compose run --build
 ```
