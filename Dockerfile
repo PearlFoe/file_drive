@@ -18,6 +18,8 @@ RUN adduser \
     --uid "${UID}" \
     ${USER}
 
+RUN chown -R user:user storage/
+
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
@@ -26,4 +28,4 @@ USER ${USER}
 
 EXPOSE 8080
 
-CMD ["gunicorn", "app:get_app", "--chdir", "/app/src/server/", "--bind", "localhost:8080", "--worker-class", "aiohttp.GunicornWebWorker"]
+CMD ["gunicorn", "app:get_app", "--chdir", "/app/src/server/", "--bind", "0.0.0.0:8080", "--worker-class", "aiohttp.GunicornWebWorker"]

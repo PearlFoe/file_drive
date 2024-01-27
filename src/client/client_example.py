@@ -20,12 +20,11 @@ async def _read_img() -> bytes:
 
 
 async def _download_img() -> None:
-    url = "http://0.0.0.0:8080/api/v1/storage/download/"
+    url = "http://localhost:8080/api/v1/storage/download/"
     data = {
         "file_name": "Lenna.png"
     }
     async with aiohttp.ClientSession() as s, s.post(url, json=data) as r:
-        print(r.headers)
         print(r.status)
 
         reader = aiohttp.MultipartReader.from_response(r)
@@ -34,7 +33,7 @@ async def _download_img() -> None:
 
 
 async def _upload_img() -> None:
-    url = "http://0.0.0.0:8080/api/v1/storage/upload/"
+    url = "http://localhost:8080/api/v1/storage/upload/"
 
     with aiohttp.MultipartWriter(subtype="image/png") as file_writer:
         headers = {
